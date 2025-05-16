@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compras - Mi Tienda al Instante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <style>
+        .help-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #c7210b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Mi Tienda al Instante</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="bi bi-house-door"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventory.html"><i class="bi bi-box-seam"></i> Inventario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sales.html"><i class="bi bi-cash-stack"></i> Ventas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="purchases.html"><i class="bi bi-cart-plus"></i> Compras</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="config.html"><i class="bi bi-gear"></i> Configuración</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-cart-plus"></i> Registro de Compras</h5>
+                        <div>
+                            <button class="btn btn-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#newPurchaseModal">
+                                <i class="bi bi-plus-circle"></i> Nueva Compra
+                            </button>
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#newSupplierModal">
+                                <i class="bi bi-person-plus"></i> Nuevo Proveedor
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" id="searchPurchase" placeholder="Buscar compra...">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="filterSupplier">
+                                        <option value="">Todos los proveedores</option>
+                                        <!-- Proveedores se llenarán con JS -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="date" class="form-control" id="filterDate">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary w-100" id="applyFiltersBtn">Aplicar</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Folio</th>
+                                        <th>Fecha</th>
+                                        <th>Proveedor</th>
+                                        <th>Productos</th>
+                                        <th>Total</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="purchasesTable">
+                                    <!-- Las compras se llenarán con JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nueva compra -->
+    <div class="modal fade" id="newPurchaseModal" tabindex="-1" aria-labelledby="newPurchaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newPurchaseModalLabel">Nueva Compra</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newPurchaseForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="purchaseDate" class="form-label">Fecha</label>
+                                <input type="date" class="form-control" id="purchaseDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="purchaseSupplier" class="form-label">Proveedor</label>
+                                <select class="form-select" id="purchaseSupplier" required>
+                                    <option value="">Seleccione un proveedor</option>
+                                    <!-- Proveedores se llenarán con JS -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h5>Productos</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="productToAdd" placeholder="Nombre del producto">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" class="form-control" id="productQuantity" placeholder="Cantidad" value="1" min="1">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" step="0.01" class="form-control" id="productPrice" placeholder="Precio unitario" min="0">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary w-100" id="addProductToPurchaseBtn">Agregar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive mb-3">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unitario</th>
+                                        <th>Subtotal</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="purchaseItemsTable">
+                                    <!-- Items de compra se agregarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end">
+                            <div class="text-end">
+                                <div class="mb-2">
+                                    <span class="fw-bold">Total: </span>
+                                    <span id="purchaseTotalAmount">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="savePurchaseBtn">Guardar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo proveedor -->
+    <div class="modal fade" id="newSupplierModal" tabindex="-1" aria-labelledby="newSupplierModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newSupplierModalLabel">Gestión de Proveedores</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="existingSuppliers" class="form-label">Proveedores existentes</label>
+                        <select class="form-select mb-2" id="existingSuppliers">
+                            <option value="">Seleccione un proveedor para editar/eliminar</option>
+                            <!-- Proveedores se llenarán con JS -->
+                        </select>
+                        <div class="d-flex justify-content-end mb-3">
+                            <button type="button" class="btn btn-danger btn-sm" id="deleteSupplierBtn" disabled>
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <form id="newSupplierForm">
+                        <div class="mb-3">
+                            <label for="supplierName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="supplierName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierPhone" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="supplierPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierAddress" class="form-label">Dirección</label>
+                            <textarea class="form-control" id="supplierAddress" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveSupplierBtn">Guardar Proveedor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalles de compra -->
+    <div class="modal fade" id="purchaseDetailModal" tabindex="-1" aria-labelledby="purchaseDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="purchaseDetailModalLabel">Detalles de Compra</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Folio:</strong> <span id="detailId"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Fecha:</strong> <span id="detailDate"></span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Proveedor:</strong> <span id="detailSupplier"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Registrado por:</strong> <span id="detailUser"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Notas:</strong> <span id="detailNotes"></span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h5>Productos</h5>
+                    <div class="table-responsive mb-3">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailItemsTable">
+                                <!-- Items de compra se mostrarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <div class="text-end">
+                            <div class="mb-2">
+                                <span class="fw-bold">Total: </span>
+                                <span id="detailTotalAmount"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!-- Modal de ayuda (cambié el encabezado a azul) -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white"> <!-- Cambiado a bg-primary (azul) -->
+                    <h5 class="modal-title" id="helpModalLabel"><i class="bi bi-question-circle"></i> Centro De Ayuda - Compras</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>¿Cómo registrar una nueva compra?</h6>
+                    <ol>
+                        <li>Haz clic en "Nueva Compra"</li>
+                        <li>Selecciona la fecha y el proveedor</li>
+                        <li>Agrega los productos con sus cantidades y precios</li>
+                        <li>Revisa el total y guarda la compra</li>
+                    </ol>
+                    
+                    <h6>¿Cómo gestionar proveedores?</h6>
+                    <p>Usa el botón "Nuevo Proveedor" para agregar o editar información de proveedores.</p>
+                    
+                    <h6>¿Cómo filtrar compras?</h6>
+                    <p>Puedes buscar por folio, filtrar por proveedor o por fecha usando los campos en la parte superior de la tabla.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">Éxito</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span id="toastMessage">Compra Registrada Correctamente</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de ayuda flotante (ahora azul) -->
+    <button class="btn btn-primary help-btn" data-bs-toggle="modal" data-bs-target="#helpModal" title="Ayuda">
+        <i class="bi bi-question-lg"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/purchases.js"></script>
+    <script>
+        // Verificar sesión
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+
+        // Opcional: Agregar funcionalidad al botón de ayuda
+        document.querySelector('.help-btn').addEventListener('click', function() {
+            console.log('Botón de ayuda clickeado');
+        });
+    </script>
+</body>
+</html>

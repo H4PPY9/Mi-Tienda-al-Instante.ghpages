@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mi Tienda al Instante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <!-- Incluir jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* Estilo para el botón de ayuda (igual que en index.html) */
+        .help-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #c7210b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* Estilo para productos con stock negativo */
+        .negative-stock {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        /* Estilo para el modal de cierre de caja */
+        .cash-close-modal .modal-dialog {
+            max-width: 800px;
+        }
+
+        /* Estilo para la notificación personalizada */
+        .custom-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            min-width: 300px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            transform: translateX(150%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .custom-notification.show {
+            transform: translateX(0);
+        }
+        
+        .custom-notification i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .custom-notification .notification-content {
+            flex-grow: 1;
+        }
+        
+        .custom-notification .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        /* Estilo para notificación de éxito */
+        .notification-success {
+            background-color: #28a745;
+        }
+        
+        /* Estilo para notificación de error */
+        .notification-error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Mi Tienda al Instante</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html"><i class="bi bi-house-door"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventory.html"><i class="bi bi-box-seam"></i> Inventario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sales.html"><i class="bi bi-cash-stack"></i> Ventas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="purchases.html"><i class="bi bi-cart-plus"></i> Compras</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="config.html"><i class="bi bi-gear"></i> Configuración</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="images/user.png" alt="Usuario" class="rounded-circle mb-3" width="100">
+                        <h5 id="userName">Usuario</h5>
+                        <p class="text-muted" id="userRole">Rol</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-exclamation-triangle"></i> Alertas de Stock</span>
+                        <button class="btn btn-light btn-sm" id="closeCashBtn">
+                            <i class="bi bi-cash-coin"></i> Cerrar Caja
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="stockAlerts">
+                            <!-- Alertas de stock se llenarán con JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-speedometer2"></i> Resumen General
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card text-white bg-success mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Total Ventas (Hoy)</h6>
+                                                <h2 id="totalSales">$0.00</h2>
+                                                <small id="totalSalesCount">0 ventas</small>
+                                            </div>
+                                            <i class="bi bi-cash-stack" style="font-size: 2rem;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card text-white bg-info mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Productos</h6>
+                                                <h2 id="totalProducts">0</h2>
+                                                <small id="totalCategories">0 categorías</small>
+                                            </div>
+                                            <i class="bi bi-box-seam" style="font-size: 2rem;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card text-white bg-warning mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Bajo Stock</h6>
+                                                <h2 id="lowStockCount">0</h2>
+                                                <small id="outOfStockCount">0 agotados</small>
+                                            </div>
+                                            <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-list-check"></i> Accesos Rápidos
+                    </div>
+                    <div class="card-body">
+                        <div class="dashboard">
+                            <div class="module-card" onclick="location.href='sales.html'">
+                                <i class="bi bi-cash-stack"></i>
+                                <h3>Ventas</h3>
+                                <p>Registra ventas y gestión de clientes</p>
+                            </div>
+                            <div class="module-card" onclick="location.href='inventory.html'">
+                                <i class="bi bi-box-seam"></i>
+                                <h3>Inventario</h3>
+                                <p>Gestiona y controla el stock de productos</p>
+                            </div>
+                            <div class="module-card" onclick="location.href='purchases.html'">
+                                <i class="bi bi-cart-plus"></i>
+                                <h3>Compras</h3>
+                                <p>Registra compras a proveedores</p>
+                            </div>
+                            <div class="module-card" onclick="location.href='config.html'">
+                                <i class="bi bi-gear"></i>
+                                <h3>Configuración</h3>
+                                <p>Ajustes del sistema</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de cierre de caja -->
+    <div class="modal fade cash-close-modal" id="cashCloseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Cierre de Caja</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha:</label>
+                        <input type="date" class="form-control" id="closeDate" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Total en efectivo:</label>
+                        <input type="text" class="form-control" id="cashTotal" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Número de ventas:</label>
+                        <input type="text" class="form-control" id="salesCount" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="initialCash" class="form-label">Efectivo inicial:</label>
+                        <input type="number" step="0.01" class="form-control" id="initialCash" value="0.00">
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notas:</label>
+                        <textarea class="form-control" id="closeNotes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmCloseBtn">Generar Reporte y Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación personalizada -->
+    <div id="customNotification" class="custom-notification notification-success" style="display: none;">
+        <i class="bi bi-check-circle-fill"></i>
+        <div class="notification-content">
+            <strong id="notificationTitle">Éxito</strong>
+            <div id="notificationMessage">Operación completada correctamente</div>
+        </div>
+        <button class="notification-close" onclick="hideNotification()">
+            <i class="bi bi-x"></i>
+        </button>
+    </div>
+
+    <!-- Botón flotante de ayuda -->
+    <div class="help-btn" data-bs-toggle="modal" data-bs-target="#helpModal" title="Centro de ayuda">
+        <i class="bi bi-question-lg" style="font-size: 1.5rem;"></i>
+    </div>
+
+    <!-- Modal de ayuda -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Centro de Ayuda - Dashboard</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Guía del Dashboard</h4>
+                    
+                    <h5 class="mt-4">1. Resumen General</h5>
+                    <ul>
+                        <li><strong>Total Ventas:</strong> Muestra el total acumulado de todas las ventas registradas.</li>
+                        <li><strong>Productos:</strong> Indica la cantidad total de productos en el inventario.</li>
+                        <li><strong>Bajo Stock:</strong> Muestra productos con stock por debajo del mínimo establecido o con stock negativo.</li>
+                    </ul>
+                    
+                    <h5 class="mt-4">2. Cierre de Caja</h5>
+                    <p>Para cerrar la caja al final del día:</p>
+                    <ol>
+                        <li>Haga clic en el botón "Cerrar Caja"</li>
+                        <li>Verifique los totales mostrados</li>
+                        <li>Ingrese el efectivo inicial si es necesario</li>
+                        <li>Agregue cualquier nota relevante</li>
+                        <li>Haga clic en "Generar Reporte y Cerrar"</li>
+                    </ol>
+                    <p>El sistema generará un reporte PDF con los detalles de las ventas y el estado del inventario.</p>
+                    
+                    <h5 class="mt-4">3. Alertas de Stock</h5>
+                    <p>Muestra los productos que necesitan reposición inmediata, incluyendo aquellos con stock negativo. Haga clic en "Inventario" para gestionar estos productos.</p>
+                    
+                    <h5 class="mt-4">4. Accesos Rápidos</h5>
+                    <ul>
+                        <li><strong>Ventas:</strong> Para registrar nuevas ventas y gestionar clientes.</li>
+                        <li><strong>Inventario:</strong> Para administrar productos y categorías.</li>
+                        <li><strong>Compras:</strong> Para registrar compras a proveedores.</li>
+                        <li><strong>Configuración:</strong> Para ajustes del sistema y usuarios.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+    // Verificar sesión
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    if (!currentUser) {
+        window.location.href = 'index.html';
+    } else {
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userRole').textContent = currentUser.role === 'owner' ? 'Dueña' : 'Cajero';
+    }
+    
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        sessionStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    });
+    
+    // Función para obtener la fecha actual en formato YYYY-MM-DD
+    function getCurrentDate() {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
+    }
+    
+    // Función para formatear dinero
+    function formatMoney(amount) {
+        return '$' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+    
+    // Funciones para mostrar/ocultar notificaciones
+    function showNotification(title, message, type = 'success') {
+        const notification = document.getElementById('customNotification');
+        const titleElement = document.getElementById('notificationTitle');
+        const messageElement = document.getElementById('notificationMessage');
+        const iconElement = notification.querySelector('i');
+        
+        // Configurar contenido
+        titleElement.textContent = title;
+        messageElement.textContent = message;
+        
+        // Configurar estilo según el tipo
+        notification.className = 'custom-notification';
+        notification.classList.add(`notification-${type}`);
+        
+        // Configurar icono según el tipo
+        if (type === 'success') {
+            iconElement.className = 'bi bi-check-circle-fill';
+        } else if (type === 'error') {
+            iconElement.className = 'bi bi-exclamation-triangle-fill';
+        } else {
+            iconElement.className = 'bi bi-info-circle-fill';
+        }
+        
+        // Mostrar notificación
+        notification.style.display = 'flex';
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Ocultar automáticamente después de 5 segundos
+        setTimeout(hideNotification, 5000);
+    }
+    
+    function hideNotification() {
+        const notification = document.getElementById('customNotification');
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 300);
+    }
+    
+    // Función para generar reporte PDF
+    function generatePDFReport(salesData, inventoryData, closeData) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Configuración del documento
+        doc.setFont('helvetica');
+        doc.setFontSize(18);
+        doc.setTextColor(40);
+        
+        // Encabezado del reporte
+        doc.text('Reporte de Cierre de Caja', 105, 15, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text(`Fecha: ${closeData.date}`, 14, 25);
+        doc.text(`Usuario: ${currentUser.name}`, 14, 30);
+        
+        // Información de cierre
+        doc.setFontSize(14);
+        doc.text('Resumen Financiero', 14, 45);
+        doc.setFontSize(12);
+        
+        doc.autoTable({
+            startY: 50,
+            head: [['Concepto', 'Valor']],
+            body: [
+                ['Efectivo Inicial', formatMoney(closeData.initialCash)],
+                ['Total de Ventas', formatMoney(closeData.cashTotal)],
+                ['Efectivo Final', formatMoney(closeData.initialCash + closeData.cashTotal)],
+                ['Número de Ventas', closeData.salesCount]
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [41, 128, 185], textColor: 255 }
+        });
+        
+        // Detalle de ventas
+        doc.setFontSize(14);
+        doc.text('Detalle de Ventas', 14, doc.autoTable.previous.finalY + 15);
+        doc.setFontSize(12);
+        
+        const salesTableData = salesData.map(sale => [
+            sale.id,
+            sale.date,
+            sale.items.length,
+            formatMoney(sale.total),
+            sale.paymentMethod
+        ]);
+        
+        doc.autoTable({
+            startY: doc.autoTable.previous.finalY + 20,
+            head: [['ID', 'Fecha', 'Productos', 'Total', 'Método']],
+            body: salesTableData,
+            theme: 'grid',
+            headStyles: { fillColor: [41, 128, 185], textColor: 255 }
+        });
+        
+        // Productos con bajo stock
+        const lowStockProducts = inventoryData.filter(p => p.stock < p.minStock);
+        if (lowStockProducts.length > 0) {
+            doc.setFontSize(14);
+            doc.text('Productos con Bajo Stock', 14, doc.autoTable.previous.finalY + 15);
+            doc.setFontSize(12);
+            
+            const stockTableData = lowStockProducts.map(product => [
+                product.id,
+                product.name,
+                product.category,
+                product.stock,
+                product.minStock
+            ]);
+            
+            doc.autoTable({
+                startY: doc.autoTable.previous.finalY + 20,
+                head: [['ID', 'Producto', 'Categoría', 'Stock', 'Mínimo']],
+                body: stockTableData,
+                theme: 'grid',
+                headStyles: { fillColor: [231, 76, 60], textColor: 255 },
+                didDrawCell: (data) => {
+                    if (data.section === 'body' && data.column.index === 3) {
+                        const stock = data.cell.raw;
+                        const minStock = data.row.raw[4];
+                        if (stock < minStock) {
+                            doc.setTextColor(231, 76, 60);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Notas
+        if (closeData.notes) {
+            doc.setFontSize(14);
+            doc.text('Notas', 14, doc.autoTable.previous.finalY + 15);
+            doc.setFontSize(12);
+            doc.text(closeData.notes, 14, doc.autoTable.previous.finalY + 20, { maxWidth: 180 });
+        }
+        
+        // Pie de página
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(10);
+            doc.text(`Página ${i} de ${pageCount}`, 200, 287, { align: 'right' });
+            doc.text('Generado por Mi Tienda al Instante', 14, 287);
+        }
+        
+        // Guardar el PDF
+        const fileName = `Cierre_Caja_${closeData.date.replace(/-/g, '')}.pdf`;
+        doc.save(fileName);
+    }
+    
+    // Función para preparar cierre de caja
+    function prepareCashClose() {
+        const today = getCurrentDate();
+        const todaySales = database.sales.filter(sale => sale.date === today && !sale.processed);
+        const cashTotal = todaySales.reduce((total, sale) => total + sale.total, 0);
+        
+        document.getElementById('closeDate').value = today;
+        document.getElementById('cashTotal').value = formatMoney(cashTotal);
+        document.getElementById('salesCount').value = todaySales.length;
+        
+        const cashModal = new bootstrap.Modal(document.getElementById('cashCloseModal'));
+        cashModal.show();
+    }
+    
+    // Función para confirmar cierre de caja
+    function confirmCashClose() {
+        const today = getCurrentDate();
+        const todaySales = database.sales.filter(sale => sale.date === today && !sale.processed);
+        const cashTotal = todaySales.reduce((total, sale) => total + sale.total, 0);
+        const salesCount = todaySales.length;
+        const initialCash = parseFloat(document.getElementById('initialCash').value) || 0;
+        const notes = document.getElementById('closeNotes').value;
+        
+        const closeData = {
+            date: today,
+            cashTotal: cashTotal,
+            salesCount: salesCount,
+            initialCash: initialCash,
+            notes: notes,
+            userId: currentUser.id
+        };
+        
+        // Registrar el cierre en la base de datos
+        if (!database.cashClosures) {
+            database.cashClosures = [];
+        }
+        database.cashClosures.push(closeData);
+        
+        // Marcar las ventas como procesadas (para no contarlas nuevamente)
+        todaySales.forEach(sale => {
+            sale.processed = true;
+        });
+        
+        saveDatabase();
+        
+        // Generar reporte PDF
+        generatePDFReport(todaySales, database.products, closeData);
+        
+        // Mostrar notificación personalizada
+        showNotification('Cierre de Caja', `Cierre completado. Total: ${formatMoney(cashTotal)}`, 'success');
+        
+        // Cerrar modal
+        const cashModal = bootstrap.Modal.getInstance(document.getElementById('cashCloseModal'));
+        cashModal.hide();
+        
+        // Actualizar dashboard (se reiniciarán los totales)
+        updateDashboard();
+    }
+    
+    // Función para actualizar el dashboard
+    function updateDashboard() {
+        // Cargar datos actualizados
+        loadDatabase();
+        
+        // Total de productos
+        const totalProducts = database.products.length;
+        document.getElementById('totalProducts').textContent = totalProducts;
+        
+        // Calcular categorías únicas
+        const categories = [...new Set(database.products.map(p => p.category))];
+        document.getElementById('totalCategories').textContent = `${categories.length} categorías`;
+        
+        // Ventas de hoy NO procesadas
+        const today = getCurrentDate();
+        const todaySales = database.sales.filter(sale => 
+            sale.date === today && !sale.processed
+        );
+        const totalTodaySales = todaySales.reduce((total, sale) => total + sale.total, 0);
+        document.getElementById('totalSales').textContent = formatMoney(totalTodaySales);
+        document.getElementById('totalSalesCount').textContent = `${todaySales.length} ventas`;
+        
+        // Productos con bajo stock (incluyendo negativos)
+        const lowStockProducts = database.products.filter(p => {
+            const minStock = p.minStock !== undefined ? p.minStock : 5;
+            return p.stock < minStock;
+        });
+        
+        const outOfStockProducts = database.products.filter(p => p.stock <= 0);
+        
+        document.getElementById('lowStockCount').textContent = lowStockProducts.length;
+        document.getElementById('outOfStockCount').textContent = `${outOfStockProducts.length} agotados`;
+        
+        // Alertas de stock
+        const alertsContainer = document.getElementById('stockAlerts');
+        alertsContainer.innerHTML = '';
+        
+        if (lowStockProducts.length === 0 && outOfStockProducts.length === 0) {
+            alertsContainer.innerHTML = '<div class="alert alert-success">No hay productos con stock bajo</div>';
+        } else {
+            // Mostrar primero los productos agotados
+            outOfStockProducts.forEach(product => {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger';
+                alert.innerHTML = `
+                    <strong>${product.name}</strong>: 
+                    <span class="negative-stock">AGOTADO</span>
+                `;
+                alertsContainer.appendChild(alert);
+            });
+            
+            // Luego los productos con bajo stock
+            lowStockProducts.forEach(product => {
+                if (product.stock > 0) { // No repetir los agotados
+                    const minStock = product.minStock !== undefined ? product.minStock : 5;
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-warning';
+                    alert.innerHTML = `
+                        <strong>${product.name}</strong>: 
+                        <span>${product.stock} unidades</span>
+                        (Mínimo: ${minStock})
+                    `;
+                    alertsContainer.appendChild(alert);
+                }
+            });
+        }
+    }
+    
+    // Event listeners
+    document.getElementById('closeCashBtn').addEventListener('click', prepareCashClose);
+    document.getElementById('confirmCloseBtn').addEventListener('click', confirmCashClose);
+    
+    // Actualizar el dashboard cada 5 segundos
+    updateDashboard();
+    setInterval(updateDashboard, 5000);
+    
+    // También actualizar cuando la ventana gana el foco
+    window.addEventListener('focus', updateDashboard);
+    </script>
+</body>
+</html>

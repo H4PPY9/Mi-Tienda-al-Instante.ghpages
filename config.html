@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Mi Tienda al Instante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <style>
+        /* Estilos generales para la barra de navegación */
+        .navbar {
+            background-color: #c7210b;
+            padding: 0.8rem 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .navbar-nav {
+            margin-left: auto;
+        }
+        
+        .nav-item {
+            margin: 0 0.5rem;
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-link i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-link.active {
+            background-color: #3498db;
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        /* Estilos responsivos */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                padding: 1rem 0;
+            }
+            
+            .nav-item {
+                margin: 0.2rem 0;
+            }
+            
+            .nav-link {
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        /* Estilos para el botón de ayuda */
+        .help-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #c7210b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .help-btn:hover {
+            transform: scale(1.1);
+            background-color: #a51b09;
+        }
+        
+        /* Estilos para el acordeón de ayuda */
+        .accordion-button:not(.collapsed) {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+        
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: rgba(0,0,0,.125);
+        }
+
+        /* Estilos para tooltips */
+        .tooltip-inner {
+            max-width: 300px;
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Mi Tienda al Instante</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html" data-bs-toggle="tooltip" title="Volver al panel principal"><i class="bi bi-house-door"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventory.html" data-bs-toggle="tooltip" title="Gestionar productos y stock"><i class="bi bi-box-seam"></i> Inventario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sales.html" data-bs-toggle="tooltip" title="Registrar ventas y ver reportes"><i class="bi bi-cash-stack"></i> Ventas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="purchases.html" data-bs-toggle="tooltip" title="Registrar compras a proveedores"><i class="bi bi-cart-plus"></i> Compras</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="config.html" data-bs-toggle="tooltip" title="Configurar sistema y usuarios"><i class="bi bi-gear"></i> Configuración</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn" data-bs-toggle="tooltip" title="Cerrar sesión y salir del sistema"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-list"></i> Menú de Configuración</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <button class="list-group-item list-group-item-action active" id="generalSettingsTab" data-bs-toggle="tooltip" title="Configuración básica de la tienda">
+                            <i class="bi bi-gear"></i> Configuración General
+                        </button>
+                        <button class="list-group-item list-group-item-action" id="usersTab" data-bs-toggle="tooltip" title="Gestionar usuarios del sistema">
+                            <i class="bi bi-people"></i> Usuarios
+                        </button>
+                        <button class="list-group-item list-group-item-action" id="categoriesTab" data-bs-toggle="tooltip" title="Administrar categorías de productos">
+                            <i class="bi bi-tags"></i> Categorías
+                        </button>
+                        <button class="list-group-item list-group-item-action" id="backupTab" data-bs-toggle="tooltip" title="Respaldar y restaurar datos">
+                            <i class="bi bi-cloud-arrow-down"></i> Respaldo
+                        </button>
+                        <button class="list-group-item list-group-item-action" id="aboutTab" data-bs-toggle="tooltip" title="Información del sistema">
+                            <i class="bi bi-info-circle"></i> Acerca de
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <!-- Panel de Configuración General -->
+                <div class="card mb-4" id="generalSettingsPanel">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-gear"></i> Configuración General</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="generalSettingsForm">
+                            <div class="mb-3">
+                                <label for="storeName" class="form-label">Nombre de la Tienda</label>
+                                <input type="text" class="form-control" id="storeName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="storeAddress" class="form-label">Dirección</label>
+                                <textarea class="form-control" id="storeAddress" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="storePhone" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="storePhone">
+                            </div>
+                            <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="Guardar configuración de la tienda">Guardar Configuración</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Panel de Usuarios -->
+                <div class="card mb-4 d-none" id="usersPanel">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-people"></i> Gestión de Usuarios</h5>
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#newUserModal" data-bs-toggle="tooltip" title="Agregar nuevo usuario al sistema">
+                            <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Usuario</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Rol</th>
+                                        <th>Último Acceso</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTable">
+                                    <!-- Usuarios se llenarán con JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel de Categorías -->
+                <div class="card mb-4 d-none" id="categoriesPanel">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-tags"></i> Gestión de Categorías</h5>
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#newCategoryModal" data-bs-toggle="tooltip" title="Crear nueva categoría de productos">
+                            <i class="bi bi-plus-circle"></i> Nueva Categoría
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Productos</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categoriesTable">
+                                    <!-- Categorías se llenarán con JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel de Respaldo -->
+                <div class="card mb-4 d-none" id="backupPanel">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-cloud-arrow-down"></i> Respaldo y Restauración</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-success text-white">
+                                        <h6><i class="bi bi-cloud-arrow-up"></i> Crear Respaldo</h6>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p>Genera un archivo de respaldo con todos los datos del sistema.</p>
+                                        <button class="btn btn-success" id="createBackupBtn" data-bs-toggle="tooltip" title="Descargar copia de seguridad de todos los datos">
+                                            <i class="bi bi-download"></i> Descargar Respaldo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6><i class="bi bi-cloud-arrow-down"></i> Restaurar Respaldo</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="backupFile" class="form-label">Seleccionar archivo de respaldo</label>
+                                            <input class="form-control" type="file" id="backupFile" accept=".json">
+                                        </div>
+                                        <button class="btn btn-warning w-100" id="restoreBackupBtn" data-bs-toggle="tooltip" title="Restaurar datos desde un archivo de respaldo">
+                                            <i class="bi bi-upload"></i> Restaurar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Acerca de -->
+                <div class="card mb-4 d-none" id="aboutPanel">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-info-circle"></i> Acerca de Mi Tienda al Instante</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <img src="images/logo.png" alt="Logo" class="img-fluid" style="max-height: 100px;">
+                            <h3 class="mt-3">Mi Tienda al Instante</h3>
+                            <p class="text-muted">Sistema de gestión para tiendas de abarrotes</p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6><i class="bi bi-info-square"></i> Información del Sistema</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Versión:</strong> 1.0.0</p>
+                                        <p><strong>Última actualización:</strong> Marzo 2025</p>
+                                        <p><strong>Desarrollado por:</strong> Equipo de Desarrollo</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6><i class="bi bi-code-square"></i> Tecnologías</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Frontend:</strong> HTML5, CSS3, JavaScript</p>
+                                        <p><strong>Framework:</strong> Bootstrap 5</p>
+                                        <p><strong>Gráficas:</strong> Chart.js</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <h6><i class="bi bi-lightbulb"></i> Soporte Técnico</h6>
+                            <p>Para soporte técnico o reporte de problemas, por favor contacte a nuestro equipo de desarrollo.</p>
+                            <p><i class="bi bi-envelope"></i> soporte@mitiendaalinstante.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo usuario -->
+    <div class="modal fade" id="newUserModal" tabindex="-1" aria-labelledby="newUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newUserModalLabel">Nuevo Usuario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newUserForm">
+                        <div class="mb-3">
+                            <label for="newUserName" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="newUserName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserUsername" class="form-label">Nombre de Usuario</label>
+                            <input type="text" class="form-control" id="newUserUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="newUserEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserPhone" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="newUserPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="newUserPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserRole" class="form-label">Rol</label>
+                            <select class="form-select" id="newUserRole" required>
+                                <option value="admin">Administrador</option>
+                                <option value="cashier">Cajero</option>
+                                <option value="inventory">Inventario</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveNewUserBtn" data-bs-toggle="tooltip" title="Guardar nuevo usuario en el sistema">Guardar Usuario</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editUserModalLabel">Editar Usuario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId">
+                        <div class="mb-3">
+                            <label for="editUsername" class="form-label">Nombre de usuario</label>
+                            <input type="text" class="form-control" id="editUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserFullname" class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="editUserFullname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editUserEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserPhone" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="editUserPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserRole" class="form-label">Rol</label>
+                            <select class="form-select" id="editUserRole" required>
+                                <option value="admin">Administrador</option>
+                                <option value="cashier">Cajero</option>
+                                <option value="inventory">Inventario</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="updateUserBtn" data-bs-toggle="tooltip" title="Actualizar datos del usuario">Actualizar Usuario</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nueva categoría -->
+    <div class="modal fade" id="newCategoryModal" tabindex="-1" aria-labelledby="newCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newCategoryModalLabel">Nueva Categoría</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newCategoryForm">
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Nombre de la categoría</label>
+                            <input type="text" class="form-control" id="categoryName" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn" data-bs-toggle="tooltip" title="Guardar nueva categoría de productos">Guardar Categoría</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmDeleteMessage">¿Está seguro que desea eliminar este usuario?</p>
+                    <p class="text-danger"><strong>Esta acción no se puede deshacer.</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn" data-bs-toggle="tooltip" title="Eliminar permanentemente este usuario">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante de ayuda -->
+    <div class="help-btn" data-bs-toggle="modal" data-bs-target="#helpModal" title="Centro de ayuda">
+        <i class="bi bi-question-lg" style="font-size: 1.5rem;"></i>
+    </div>
+
+    <!-- Modal de ayuda -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Centro de Ayuda - Configuración</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Guía de Configuración</h4>
+                    
+                    <div class="accordion" id="helpAccordion">
+                        <!-- Sección Configuración General -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#helpGeneral">
+                                    <i class="bi bi-gear me-2"></i> Configuración General
+                                </button>
+                            </h2>
+                            <div id="helpGeneral" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>En esta sección puedes configurar los datos básicos de tu tienda:</p>
+                                    <ul>
+                                        <li><strong>Nombre de la Tienda:</strong> El nombre que aparecerá en facturas y reportes</li>
+                                        <li><strong>Dirección:</strong> Ubicación física de tu negocio</li>
+                                        <li><strong>Teléfono:</strong> Número de contacto para clientes</li>
+                                    </ul>
+                                    <p>Haz clic en <strong>"Guardar Configuración"</strong> para aplicar los cambios.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección Usuarios -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#helpUsers">
+                                    <i class="bi bi-people me-2"></i> Gestión de Usuarios
+                                </button>
+                            </h2>
+                            <div id="helpUsers" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>Administra los usuarios que pueden acceder al sistema:</p>
+                                    <ul>
+                                        <li><strong>Nuevo Usuario:</strong> Crea cuentas para empleados</li>
+                                        <li><strong>Editar:</strong> Modifica datos de usuarios existentes</li>
+                                        <li><strong>Eliminar:</strong> Remueve usuarios del sistema</li>
+                                    </ul>
+                                    <div class="alert alert-info">
+                                        <strong>Roles disponibles:</strong>
+                                        <ul>
+                                            <li><span class="badge bg-danger">Administrador</span> - Acceso completo</li>
+                                            <li><span class="badge bg-primary">Cajero</span> - Solo ventas y reportes</li>
+                                            <li><span class="badge bg-success">Inventario</span> - Solo gestión de productos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección Categorías -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#helpCategories">
+                                    <i class="bi bi-tags me-2"></i> Gestión de Categorías
+                                </button>
+                            </h2>
+                            <div id="helpCategories" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>Organiza tus productos en categorías para un mejor control:</p>
+                                    <ul>
+                                        <li><strong>Nueva Categoría:</strong> Agrega grupos de productos</li>
+                                        <li><strong>Editar:</strong> Cambia el nombre de categorías</li>
+                                        <li><strong>Eliminar:</strong> Remueve categorías no utilizadas</li>
+                                    </ul>
+                                    <div class="alert alert-warning">
+                                        <strong>Nota:</strong> No puedes eliminar categorías que contengan productos.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección Respaldo -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#helpBackup">
+                                    <i class="bi bi-cloud-arrow-down me-2"></i> Respaldo y Restauración
+                                </button>
+                            </h2>
+                            <div id="helpBackup" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>Protege tu información con copias de seguridad:</p>
+                                    <ul>
+                                        <li><strong>Crear Respaldo:</strong> Descarga un archivo con todos tus datos</li>
+                                        <li><strong>Restaurar Respaldo:</strong> Carga un archivo de respaldo previo</li>
+                                    </ul>
+                                    <div class="alert alert-danger">
+                                        <strong>Importante:</strong> La restauración sobrescribirá todos los datos actuales.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        // Configuración de toastr
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        // Verificar sesión
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+        
+        // Inicializar datos si no existen
+        if (!localStorage.getItem('users')) {
+            const initialUsers = [
+                {
+                    id: 1,
+                    username: 'admin',
+                    name: 'Administrador',
+                    email: 'admin@lafe.com',
+                    phone: '9331253559',
+                    password: 'admin123',
+                    role: 'admin',
+                    lastLogin: new Date().toISOString()
+                }
+            ];
+            localStorage.setItem('users', JSON.stringify(initialUsers));
+        }
+        
+        // Inicializar configuración de la tienda si no existe
+        if (!localStorage.getItem('storeSettings')) {
+            const initialSettings = {
+                storeName: 'Abarrotes La Fe',
+                storeAddress: 'Carretera Principal S/N EJ. Reforma Cunduacán Tabasco',
+                storePhone: '9331253559'
+            };
+            localStorage.setItem('storeSettings', JSON.stringify(initialSettings));
+        }
+
+        // Cargar configuración de la tienda en el formulario
+        function loadStoreSettings() {
+            const settings = JSON.parse(localStorage.getItem('storeSettings')) || {};
+            document.getElementById('storeName').value = settings.storeName || '';
+            document.getElementById('storeAddress').value = settings.storeAddress || '';
+            document.getElementById('storePhone').value = settings.storePhone || '';
+        }
+
+        // Guardar configuración de la tienda
+        document.getElementById('generalSettingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const storeName = document.getElementById('storeName').value.trim();
+            const storeAddress = document.getElementById('storeAddress').value.trim();
+            const storePhone = document.getElementById('storePhone').value.trim();
+            
+            if (!storeName) {
+                toastr.warning('El nombre de la tienda es requerido');
+                return;
+            }
+            
+            const settings = {
+                storeName,
+                storeAddress,
+                storePhone
+            };
+            
+            localStorage.setItem('storeSettings', JSON.stringify(settings));
+            toastr.success('Configuración guardada correctamente');
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+
+        // Manejo de pestañas
+        document.getElementById('generalSettingsTab').addEventListener('click', function() {
+            document.getElementById('generalSettingsPanel').classList.remove('d-none');
+            document.getElementById('usersPanel').classList.add('d-none');
+            document.getElementById('categoriesPanel').classList.add('d-none');
+            document.getElementById('backupPanel').classList.add('d-none');
+            document.getElementById('aboutPanel').classList.add('d-none');
+            
+            // Actualizar clases activas
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+
+        document.getElementById('usersTab').addEventListener('click', function() {
+            document.getElementById('generalSettingsPanel').classList.add('d-none');
+            document.getElementById('usersPanel').classList.remove('d-none');
+            document.getElementById('categoriesPanel').classList.add('d-none');
+            document.getElementById('backupPanel').classList.add('d-none');
+            document.getElementById('aboutPanel').classList.add('d-none');
+            
+            // Actualizar clases activas
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Cargar tabla de usuarios
+            loadUsersTable();
+        });
+
+        document.getElementById('categoriesTab').addEventListener('click', function() {
+            document.getElementById('generalSettingsPanel').classList.add('d-none');
+            document.getElementById('usersPanel').classList.add('d-none');
+            document.getElementById('categoriesPanel').classList.remove('d-none');
+            document.getElementById('backupPanel').classList.add('d-none');
+            document.getElementById('aboutPanel').classList.add('d-none');
+            
+            // Actualizar clases activas
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+
+        document.getElementById('backupTab').addEventListener('click', function() {
+            document.getElementById('generalSettingsPanel').classList.add('d-none');
+            document.getElementById('usersPanel').classList.add('d-none');
+            document.getElementById('categoriesPanel').classList.add('d-none');
+            document.getElementById('backupPanel').classList.remove('d-none');
+            document.getElementById('aboutPanel').classList.add('d-none');
+            
+            // Actualizar clases activas
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+
+        document.getElementById('aboutTab').addEventListener('click', function() {
+            document.getElementById('generalSettingsPanel').classList.add('d-none');
+            document.getElementById('usersPanel').classList.add('d-none');
+            document.getElementById('categoriesPanel').classList.add('d-none');
+            document.getElementById('backupPanel').classList.add('d-none');
+            document.getElementById('aboutPanel').classList.remove('d-none');
+            
+            // Actualizar clases activas
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+
+        // Función para cargar usuarios en la tabla
+        function loadUsersTable() {
+            const usersTable = document.getElementById('usersTable');
+            usersTable.innerHTML = '';
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td>
+                        <span class="badge ${user.role === 'admin' ? 'bg-danger' : user.role === 'cashier' ? 'bg-primary' : 'bg-success'}">
+                            ${user.role === 'admin' ? 'Administrador' : user.role === 'cashier' ? 'Cajero' : 'Inventario'}
+                        </span>
+                    </td>
+                    <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Nunca'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm edit-user me-1" data-id="${user.id}">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm delete-user" data-id="${user.id}">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+                
+                usersTable.appendChild(row);
+            });
+            
+            // Agregar event listeners a los botones de editar
+            document.querySelectorAll('.edit-user').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = parseInt(this.getAttribute('data-id'));
+                    editUser(userId);
+                });
+            });
+            
+            // Agregar event listeners a los botones de eliminar
+            document.querySelectorAll('.delete-user').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = parseInt(this.getAttribute('data-id'));
+                    confirmDeleteUser(userId);
+                });
+            });
+        }
+        
+        // Función para editar usuario
+        function editUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.id === userId);
+            
+            if (!user) {
+                toastr.error('Usuario no encontrado');
+                return;
+            }
+            
+            // Llenar el modal de edición con los datos del usuario
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editUserFullname').value = user.name;
+            document.getElementById('editUserEmail').value = user.email;
+            document.getElementById('editUserPhone').value = user.phone;
+            document.getElementById('editUserRole').value = user.role;
+            
+            // Mostrar el modal de edición
+            const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            editModal.show();
+        }
+        
+        // Event listener para guardar cambios al editar usuario
+        document.getElementById('updateUserBtn').addEventListener('click', function() {
+            const userId = parseInt(document.getElementById('editUserId').value);
+            const username = document.getElementById('editUsername').value.trim();
+            const name = document.getElementById('editUserFullname').value.trim();
+            const email = document.getElementById('editUserEmail').value.trim();
+            const phone = document.getElementById('editUserPhone').value.trim();
+            const role = document.getElementById('editUserRole').value;
+            
+            if (!username || !name || !email) {
+                toastr.warning('Por favor complete todos los campos requeridos');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex === -1) {
+                toastr.error('Usuario no encontrado');
+                return;
+            }
+            
+            // Verificar si el nombre de usuario ya existe (excluyendo al usuario actual)
+            const usernameExists = users.some(user => 
+                user.username === username && user.id !== userId
+            );
+            
+            if (usernameExists) {
+                toastr.error('El nombre de usuario ya está en uso');
+                return;
+            }
+            
+            // Verificar si el email ya existe (excluyendo al usuario actual)
+            const emailExists = users.some(user => 
+                user.email === email && user.id !== userId
+            );
+            
+            if (emailExists) {
+                toastr.error('El correo electrónico ya está registrado');
+                return;
+            }
+            
+            // Actualizar los datos del usuario
+            users[userIndex].username = username;
+            users[userIndex].name = name;
+            users[userIndex].email = email;
+            users[userIndex].phone = phone;
+            users[userIndex].role = role;
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Cerrar modal y actualizar tabla
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+            modal.hide();
+            loadUsersTable();
+            
+            toastr.success('Usuario actualizado correctamente');
+        });
+        
+        // Función para confirmar eliminación de usuario
+        function confirmDeleteUser(userId) {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            // Validar si es el usuario administrador principal (ID 1)
+            if (userId === 1) {
+                toastr.error('No se puede eliminar al usuario administrador principal');
+                return;
+            }
+            
+            // Validar si el usuario intenta eliminarse a sí mismo
+            if (currentUser && currentUser.id === userId) {
+                toastr.error('No puedes eliminarte a ti mismo');
+                return;
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            document.getElementById('confirmDeleteMessage').textContent = `¿Está seguro que desea eliminar este usuario?`;
+            
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                deleteUser(userId);
+                modal.hide();
+            };
+            
+            modal.show();
+        }
+        
+        // Función para eliminar usuario
+        function deleteUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const updatedUsers = users.filter(user => user.id !== userId);
+            
+            localStorage.setItem('users', JSON.stringify(updatedUsers));
+            loadUsersTable();
+            
+            toastr.success('Usuario eliminado correctamente');
+        }
+        
+        // Manejo del formulario para nuevo usuario
+        document.getElementById('saveNewUserBtn').addEventListener('click', function() {
+            const name = document.getElementById('newUserName').value.trim();
+            const username = document.getElementById('newUserUsername').value.trim();
+            const email = document.getElementById('newUserEmail').value.trim();
+            const phone = document.getElementById('newUserPhone').value.trim();
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            
+            // Validaciones básicas
+            if (!name || !username || !email || !password) {
+                toastr.warning('Por favor complete todos los campos requeridos');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Verificar si el usuario ya existe
+            const usernameExists = users.some(user => user.username === username);
+            if (usernameExists) {
+                toastr.error('El nombre de usuario ya está en uso');
+                return;
+            }
+            
+            // Verificar si el email ya existe
+            const emailExists = users.some(user => user.email === email);
+            if (emailExists) {
+                toastr.error('El correo electrónico ya está registrado');
+                return;
+            }
+            
+            // Crear nuevo usuario
+            const newUser = {
+                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                name: name,
+                username: username,
+                email: email,
+                phone: phone,
+                password: password,
+                role: role,
+                lastLogin: null
+            };
+            
+            // Agregar el nuevo usuario
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Cerrar modal y actualizar tabla
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newUserModal'));
+            modal.hide();
+            loadUsersTable();
+            
+            toastr.success('Usuario creado correctamente');
+        });
+        
+        // Resetear formulario cuando se cierra el modal
+        document.getElementById('newUserModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('newUserForm').reset();
+        });
+        
+        // Resetear formulario cuando se cierra el modal de edición
+        document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('editUserForm').reset();
+        });
+        
+        // Cargar configuración de la tienda al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStoreSettings();
+            
+            if (window.location.hash === '#users') {
+                document.getElementById('usersTab').click();
+            }
+            
+            // Inicializar tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+</body>
+</html>
